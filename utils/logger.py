@@ -1,5 +1,3 @@
-# ─── utils/logger.py ──────────────────────────────────────────────────────────
-# Dual-mode logger: MongoDB (persistent) + Session State (fallback)
 
 import streamlit as st
 from datetime import datetime

@@ -1,7 +1,7 @@
 
 APP_TITLE   = "ContentGuard AI — Moderation Agent"
 APP_ICON    = "🛡️"
-APP_VERSION = "2.0.0"
+APP_VERSION = "1.0.0"
 
 GROQ_MODEL       = "llama-3.3-70b-versatile"
 GROQ_TEMPERATURE = 0.1

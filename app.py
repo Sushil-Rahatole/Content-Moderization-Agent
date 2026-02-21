@@ -1,4 +1,3 @@
-# ─── app.py ── ContentGuard AI v2.0 ───────────────────────────────────────────
 import streamlit as st
 import json, datetime
 from config.settings import APP_TITLE, APP_ICON, SAMPLE_PROMPTS, PLATFORM_POLICIES, VERDICTS
@@ -44,12 +43,10 @@ div[data-testid="stSidebar"] { background:#0d0d18 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Init ─────────────────────────────────────────────────────────────────────
 init_log()
-sync_from_db()  # Pull existing MongoDB logs into session on every fresh load
+sync_from_db()  
 api_key = render_sidebar()
 
-# ── Header ───────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="hero">
   <h1>🛡️ ContentGuard AI</h1>
@@ -57,12 +54,10 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Active Policy Badge ───────────────────────────────────────────────────────
 active_policy = st.session_state.get("active_policy", "🌐 General Platform")
 st.markdown(f'<div style="text-align:center"><span class="policy-badge">📋 Active Policy: {active_policy}</span></div>', unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ── Tabs ─────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🔍 Analyze Text",
     "🌐 URL Scanner",
@@ -71,13 +66,9 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "⚙️ Policy & API Docs",
 ])
 
-# ═════════════════════════════════════════════════════════════════════════════
-# TAB 1 — Single Text Analysis + Appeal
-# ═════════════════════════════════════════════════════════════════════════════
 with tab1:
     st.markdown("### 📝 Analyze Text Content")
 
-    # Sample buttons
     s_cols = st.columns(3)
     for i, (label, sample) in enumerate(SAMPLE_PROMPTS.items()):
         with s_cols[i]:
@@ -119,7 +110,6 @@ with tab1:
         result, orig = st.session_state["t1_result"]
         render_result(result, orig)
 
-        # ── APPEAL SYSTEM ─────────────────────────────────────────────────
         if result["verdict"] in ("REVIEW", "BLOCK"):
             st.markdown('<div class="appeal-box">', unsafe_allow_html=True)
             st.markdown("#### ⚖️ Appeal This Decision")
@@ -147,7 +137,6 @@ with tab1:
                             st.error(f"Appeal error: {e}")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # ── WEBHOOK SIMULATION ────────────────────────────────────────────
         with st.expander("🔌 Webhook Payload (API Integration Preview)"):
             st.markdown("This is what ContentGuard would POST to your app's endpoint in production:")
             payload = {
@@ -163,9 +152,6 @@ with tab1:
             }
             st.markdown(f'<div class="webhook-box">{json.dumps(payload, indent=2)}</div>', unsafe_allow_html=True)
 
-# ═════════════════════════════════════════════════════════════════════════════
-# TAB 2 — URL Scanner
-# ═════════════════════════════════════════════════════════════════════════════
 with tab2:
     st.markdown("### 🌐 URL Content Scanner")
     st.markdown("Enter any public URL. The agent fetches the page and moderates its content automatically.")
@@ -196,9 +182,6 @@ with tab2:
                     except Exception as e:
                         st.error(f"Moderation error: {e}")
 
-# ═════════════════════════════════════════════════════════════════════════════
-# TAB 3 — Batch CSV Moderation
-# ═════════════════════════════════════════════════════════════════════════════
 with tab3:
     st.markdown("### 📦 Batch Moderation — CSV Upload")
     st.markdown("Upload a CSV with a `text` column. The agent moderates every row automatically.")
@@ -252,7 +235,7 @@ with tab3:
                     rdf = pd.DataFrame(results_list)
                     st.dataframe(rdf, use_container_width=True, hide_index=True)
 
-                    # Color summary
+                   
                     c1,c2,c3 = st.columns(3)
                     c1.metric("✅ Allowed",  sum(1 for r in results_list if r.get("verdict")=="ALLOW"))
                     c2.metric("⚠️ Review",   sum(1 for r in results_list if r.get("verdict")=="REVIEW"))
@@ -263,15 +246,9 @@ with tab3:
                                        file_name="batch_results.csv", mime="text/csv",
                                        use_container_width=True)
 
-# ═════════════════════════════════════════════════════════════════════════════
-# TAB 4 — Dashboard
-# ═════════════════════════════════════════════════════════════════════════════
 with tab4:
     render_dashboard()
 
-# ═════════════════════════════════════════════════════════════════════════════
-# TAB 5 — Policy Builder + API Docs
-# ═════════════════════════════════════════════════════════════════════════════
 with tab5:
     st.markdown("### ⚙️ Platform Policy Builder")
     st.markdown("Select the policy that matches your platform. The agent adjusts its strictness automatically.")

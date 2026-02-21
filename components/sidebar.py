@@ -1,4 +1,3 @@
-# ─── components/sidebar.py ────────────────────────────────────────────────────
 import streamlit as st
 from utils.logger import get_log, get_stats, clear_log
 from utils.exporter import generate_csv, get_export_filename
@@ -27,7 +26,6 @@ def render_sidebar() -> str:
         </div>
         """, unsafe_allow_html=True)
 
-        # ── API Key ──────────────────────────────────────────────────────────
         st.markdown("### 🔑 API Configuration")
         secret_key = get_api_key()
 
@@ -45,7 +43,6 @@ def render_sidebar() -> str:
                 st.warning("⚠️ Enter your free Groq API key above")
                 st.markdown("[🔗 Get free key →](https://console.groq.com)")
 
-        # ── DB Status ────────────────────────────────────────────────────────
         from utils.database import is_db_connected, get_total_count
         if is_db_connected():
             total = get_total_count()
@@ -55,14 +52,12 @@ def render_sidebar() -> str:
 
         st.markdown("---")
 
-        # ── Thresholds ───────────────────────────────────────────────────────
         st.markdown("### 📊 Risk Thresholds")
         st.markdown("🟢 **ALLOW** &nbsp;&nbsp; Score 0 – 39")
         st.markdown("🟡 **REVIEW** &nbsp; Score 40 – 69")
         st.markdown("🔴 **BLOCK** &nbsp;&nbsp; Score 70 – 100")
         st.markdown("---")
 
-        # ── Live Stats ───────────────────────────────────────────────────────
         stats = get_stats()
         st.markdown("### 📈 Session Stats")
         c1, c2 = st.columns(2)
@@ -75,13 +70,11 @@ def render_sidebar() -> str:
             st.metric("⚖️ Appeals", stats["appeals"])
         st.markdown("---")
 
-        # ── Categories ───────────────────────────────────────────────────────
         st.markdown("### 🔍 Categories")
         for cat in HARMFUL_CATEGORIES:
             st.markdown(f"• {cat}")
         st.markdown("---")
 
-        # ── Export & Clear ───────────────────────────────────────────────────
         log = get_log()
         if log:
             st.download_button(
@@ -95,7 +88,6 @@ def render_sidebar() -> str:
                 clear_log()
                 st.rerun()
 
-        # ── History ──────────────────────────────────────────────────────────
         if log:
             st.markdown("---")
             st.markdown("### 📜 Recent")

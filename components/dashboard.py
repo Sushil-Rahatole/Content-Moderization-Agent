@@ -1,5 +1,3 @@
-# ─── components/dashboard.py ──────────────────────────────────────────────────
-# Analytics dashboard — charts and stats from session log
 
 import streamlit as st
 from utils.logger import get_log, get_stats
@@ -14,13 +12,11 @@ def _render_verdict_bar(allow_pct, review_pct, block_pct):
     """
     st.markdown("**Verdict Distribution**")
 
-    # Use st.columns proportionally — this is 100% reliable, no HTML needed
     total_pct = allow_pct + review_pct + block_pct
 
     if total_pct == 0:
         return
 
-    # Build a colored progress-style bar using pure HTML — simple single string
     bar_html = (
         "<div style='"
         "display:flex; height:30px; border-radius:10px; overflow:hidden;"
@@ -64,7 +60,6 @@ def _render_verdict_bar(allow_pct, review_pct, block_pct):
 
     st.markdown(bar_html, unsafe_allow_html=True)
 
-    # Legend below — simple columns, no HTML
     c1, c2, c3 = st.columns(3)
     c1.markdown(
         f"<div style='color:#22c55e; font-family:monospace; font-size:0.85rem;'>"
@@ -88,7 +83,6 @@ def render_dashboard():
     log   = get_log()
     stats = get_stats()
 
-    # ── Empty State ──────────────────────────────────────────────────────────
     if not log:
         st.markdown(
             "<div style='text-align:center; padding:3rem; color:#555;'>"
@@ -100,7 +94,6 @@ def render_dashboard():
         )
         return
 
-    # ── KPI Metrics ──────────────────────────────────────────────────────────
     st.markdown("### 📊 Session Overview")
     c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("📝 Total",     stats["total"])
@@ -111,7 +104,6 @@ def render_dashboard():
 
     st.markdown("---")
 
-    # ── Verdict Distribution ──────────────────────────────────────────────────
     st.markdown("### 🎯 Verdict Distribution")
     total = stats["total"]
     if total > 0:
@@ -122,7 +114,6 @@ def render_dashboard():
 
     st.markdown("---")
 
-    # ── Most Flagged Categories ──────────────────────────────────────────────
     st.markdown("### 🚩 Most Flagged Categories")
     all_flagged = []
     for entry in log:
@@ -135,7 +126,6 @@ def render_dashboard():
         max_count = counts[0][1]
         for cat, count in counts:
             bar_pct = int((count / max_count) * 100)
-            # Each bar is built as a plain concatenated string — no f-string nesting
             bar_html = (
                 "<div style='margin-bottom:12px;'>"
                 "<div style='"
@@ -163,7 +153,6 @@ def render_dashboard():
 
     st.markdown("---")
 
-    # ── Full Moderation Log ──────────────────────────────────────────────────
     st.markdown("### 📋 Full Moderation Log")
     df           = pd.DataFrame(log)
     display_cols = ["timestamp", "text", "risk_score", "verdict", "flagged_categories"]

@@ -1,5 +1,3 @@
-# ─── utils/database.py ────────────────────────────────────────────────────────
-# MongoDB Atlas integration for persistent moderation log storage
 
 import streamlit as st
 from datetime import datetime
@@ -20,7 +18,7 @@ def get_db_client():
         if not uri:
             return None
         client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-        client.admin.command("ping")   # verify connection
+        client.admin.command("ping")  
         return client
     except (ConnectionFailure, ServerSelectionTimeoutError, Exception):
         return None
@@ -34,7 +32,6 @@ def get_collection():
     try:
         db  = client["contentguard"]
         col = db["moderation_logs"]
-        # Create indexes for fast querying
         col.create_index([("timestamp", DESCENDING)])
         col.create_index([("verdict",   1)])
         return col
@@ -47,7 +44,6 @@ def is_db_connected() -> bool:
     return get_collection() is not None
 
 
-# ── Write ─────────────────────────────────────────────────────────────────────
 
 def save_log_entry(text: str, result: dict, source: str = "text") -> bool:
     """
@@ -78,7 +74,6 @@ def save_log_entry(text: str, result: dict, source: str = "text") -> bool:
         return False
 
 
-# ── Read ──────────────────────────────────────────────────────────────────────
 
 def fetch_all_logs(limit: int = 200) -> list:
     """
@@ -129,7 +124,6 @@ def fetch_stats_from_db() -> dict:
         block   = col.count_documents({"verdict": "BLOCK"})
         appeals = col.count_documents({"is_appeal": True})
 
-        # Avg score via aggregation pipeline
         pipeline = [{"$group": {"_id": None, "avg": {"$avg": "$risk_score"}}}]
         avg_result = list(col.aggregate(pipeline))
         avg_score  = round(avg_result[0]["avg"], 1) if avg_result else 0
